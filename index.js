@@ -1,71 +1,67 @@
 // index.js
 const express = require('express');
 const cron = require('node-cron');
-const { getListItemUrls } = require('./crawler'); // 이전에 만든 크롤러 함수 가져오기
+// crawler.js에서 함수 이름을 getArticleUrls로 변경했으므로 맞춰줍니다.
+const { getArticleUrls } = require('./crawler'); 
 
 const app = express();
 const PORT = 3000;
 
 // =================================================================
-// ❗️ 1. 여기에 크롤링할 주소들을 직접 입력하세요.
+// ❗️ 1. 크롤링할 기술 블로그 목록 (여기에 계속 추가)
 // =================================================================
-const TARGET_URLS = [
-  // 필요한 만큼 주소를 계속 추가할 수 있습니다.
-  "https://toss.tech/"
+const TECH_BLOGS = [
+  {
+    name: 'Toss Tech',
+    url: 'https://toss.tech/',
+    // 위 crawler.js에서 사용한 선택자와 동일하게 맞춰줍니다.
+    // 현재는 crawler.js가 toss 전용이므로 이 selector는 사용되지 않지만,
+    // 나중에 crawler.js를 범용으로 만들 경우를 대비한 구조입니다.
+    selector: 'a[href^="/article/"]' 
+  },
+  // {
+  //   name: 'Woowahan Tech',
+  //   url: 'https://techblog.woowahan.com/',
+  //   selector: '...' // 우아한형제들 블로그에 맞는 선택자
+  // },
 ];
 // =================================================================
 
-
-/**
- * 전체 크롤링 프로세스를 실행하는 메인 함수
- */
 const runProcess = async () => {
   console.log('====================================');
-  console.log('전체 크롤링 프로세스를 시작합니다...');
+  console.log('전체 기술 블로그 크롤링을 시작합니다...');
   
-  // TARGET_URLS 배열에 있는 모든 주소에 대해 크롤링을 실행합니다.
-  for (const url of TARGET_URLS) {
-    // 1. 크롤러를 실행해서 세부 페이지 URL 목록을 가져옵니다.
-    const collectedUrls = await getListItemUrls(url);
+  for (const blog of TECH_BLOGS) {
+    console.log(`\n[${blog.name}] 블로그 크롤링 중...`);
+    
+    // 현재 crawler.js는 toss 전용이므로 blog.url만 넘겨줍니다.
+    const collectedUrls = await getArticleUrls(blog.url);
 
     if (collectedUrls.length > 0) {
-      console.log(`[${url}] 에서 수집된 URL 목록:`);
-      console.log(collectedUrls);
-
-      // ❗️ 2. (나중에 DB에 저장할 때) 이 위치에 DB 저장 함수를 호출하면 됩니다.
-      // await saveUrls(collectedUrls); 
+      console.log(`[${blog.name}] 에서 ${collectedUrls.length}개의 URL 수집 완료.`);
+      
+      // ❗️ 2. 여기에 DB 저장 로직을 연결하면 됩니다.
+      // await saveUrlsToDatabase(blog.name, collectedUrls);
+      console.log(collectedUrls); // 임시로 콘솔에 출력
     }
   }
   
-  console.log('모든 작업이 완료되었습니다.');
+  console.log('\n모든 크롤링 작업이 완료되었습니다.');
   console.log('====================================\n');
 };
 
 
-// 서버를 실행하고 스케줄러를 시작합니다.
 app.listen(PORT, () => {
   console.log(`서버가 ${PORT}번 포트에서 실행 중입니다.`);
-  
-  // 서버가 시작되면, 일단 한 번 즉시 실행해서 잘 동작하는지 확인합니다.
   runProcess(); 
 
-  // =================================================================
-  // ❗️ 3. 스케줄 설정: cron 표현식으로 실행 주기를 설정합니다.
-  // =================================================================
-  // 예시: 매 시간 정각에 실행 ('0 * * * *')
-  // 테스트용: 매 1분마다 실행 ('*/1 * * * *')
-  cron.schedule('0 * * * *', () => {
+  // 매일 자정(0시 0분)에 실행
+  cron.schedule('0 0 * * *', () => {
     console.log('정해진 시간이 되어 스케줄링된 작업을 실행합니다.');
     runProcess();
   }, {
     scheduled: true,
-    timezone: "Asia/Seoul" // 타임존을 한국 시간으로 설정
+    timezone: "Asia/Seoul"
   });
-
-  console.log("스케줄러가 설정되었습니다. 다음 실행은 정해진 시간에 맞춰 진행됩니다.");
-});
-
-// 서버가 계속 실행 중인지 간단히 확인하는 용도
-app.get('/health', (req, res) => {
-    res.send('Crawler server is alive!');
+  console.log("스케줄러가 설정되었습니다. 다음 실행은 매일 자정입니다.");
 });
