@@ -63,5 +63,5 @@ app.listen(PORT, () => {
     scheduled: true,
     timezone: "Asia/Seoul"
   });
-  console.log("스케줄러가 설정되었습니다. 다음 실행은 매일 자정입니다.");
+  console.log("스케줄러가 설정되었습니다. 다음 실행은 3시간 간격으로 진행됩니다.");
 });
