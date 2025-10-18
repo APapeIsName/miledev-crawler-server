@@ -1,6 +1,5 @@
 // ❗️ 1. DB 저장 함수를 `saveUrls`에서 `saveArticles`로 변경하여 가져옵니다.
 const { getAllTossArticles } = require('./toss_initial_crawler');
-const { saveArticles } = require('../db'); // DB 저장 함수 경로 확인
 require('dotenv').config();
 
 const initializeDatabase = async () => {
