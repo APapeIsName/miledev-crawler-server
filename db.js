@@ -1,14 +1,15 @@
 // db.js
 const { Pool } = require('pg');
 const { database } = require('./config');
+require('dotenv').config({ path: '.env' });
 
 // DB 접속 정보 설정
 const pool = new Pool({
-  host: database.host,
-  port: database.port,
-  user: database.user,
-  password: database.password,
-  database: database.database
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
 /**
