@@ -56,7 +56,7 @@ app.listen(PORT, () => {
   runProcess(); 
 
   // 매일 자정(0시 0분)에 실행
-  cron.schedule('0 0 * * *', () => {
+  cron.schedule('0 */3 * * *', () => {
     console.log('정해진 시간이 되어 스케줄링된 작업을 실행합니다.');
     runProcess();
   }, {
