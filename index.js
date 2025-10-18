@@ -2,7 +2,7 @@
 const express = require('express');
 const cron = require('node-cron');
 // crawler.js에서 함수 이름을 getArticleUrls로 변경했으므로 맞춰줍니다.
-const { getArticleUrls } = require('./crawler'); 
+const { getArticleUrls } = require('./crawler/toss_crawler'); 
 
 const app = express();
 const PORT = 3000;
