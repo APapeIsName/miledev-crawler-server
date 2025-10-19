@@ -24,7 +24,8 @@ const sendCrawledData = async () => {
         title: article.title,
         thumbnailImageUrl: article.thumbnailImageUrl,
         sourceUrl: article.sourceUrl,
-        sourceFrom: SOURCE_NAME // 출처 정보를 추가합니다.
+        sourceFrom: SOURCE_NAME,
+        publishedAt: article.publishedAt
     }));
 
     const requestBody = {

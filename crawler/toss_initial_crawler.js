@@ -22,10 +22,27 @@ const getAllTossArticles = async () => {
         anchors.forEach(anchor => {
           const titleElement = anchor.querySelector('span.typography--h6');
           const imageElement = anchor.querySelector('img[alt="thumbnail"]');
+
+          // 📌 1. 날짜와 작성자 정보가 담긴 span 태그를 찾습니다.
+          const dateElement = anchor.querySelector('span.typography--small');
+
+          let publishedAt = null;
+          if (dateElement) {
+              // 📌 2. "2025년 10월 16일 · 하태호" 에서 날짜 부분만 추출합니다.
+              const fullText = dateElement.innerText; // "2025년 10월 16일 · 하태호"
+              const datePart = fullText.split('·')[0].trim(); // "2025년 10월 16일"
+
+              // 📌 3. "YYYY-MM-DD" 형식으로 변환합니다.
+              publishedAt = datePart.replace(/년|월/g, '_').replace(/일/g, '').trim();
+              // "2025- 10- 16" -> "2025-10-16" 공백 제거
+              publishedAt = publishedAt.replace(/\s/g, '');
+          }
+
           articles.push({
-            title: titleElement ? titleElement.innerText.trim() : '제목 없음',
-            thumbnailImageUrl: imageElement ? imageElement.src : null,
-            sourceUrl: anchor.href,
+              title: titleElement ? titleElement.innerText.trim() : '제목 없음',
+              thumbnailImageUrl: imageElement ? imageElement.src : null,
+              sourceUrl: anchor.href,
+              publishedAt: publishedAt
           });
         });
         return articles;
